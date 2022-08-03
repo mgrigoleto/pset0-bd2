@@ -1,0 +1,97 @@
+psql -U postgres
+computacao@raiz
+
+create user grigoleto with encrypted password '123';
+
+/* Criando o banco de dados 'uvv' através do usuário postgres. */
+CREATE DATABASE DNA WITH OWNER = grigoleto TEMPLATE = template0 ENCODING = UTF8 ALLOW_CONNECTIONS = true;
+grant all privileges on database DNA to grigoleto;
+
+/* Logar no usuário 'grigoleto' com senha '123' para criar o esquema abaixo */
+\c dna grigoleto
+123
+
+/* Script de criação e inserção do banco de dados */
+
+CREATE TABLE mae (
+                CPF_mae CHAR(11) NOT NULL,
+                nome VARCHAR(50) NOT NULL,
+                dtNasc DATE NOT NULL,
+                tel CHAR(11) NOT NULL,
+                Endereco VARCHAR(180) NOT NULL,
+                seqDNA VARCHAR(200) NOT NULL,
+                CONSTRAINT cpf_mae PRIMARY KEY (CPF_mae)
+);
+COMMENT ON TABLE mae IS 'Tabela com dados da mãe';
+COMMENT ON COLUMN mae.CPF_mae IS 'CPF da mãe';
+COMMENT ON COLUMN mae.dtNasc IS 'Data de nasacimento da mãe';
+COMMENT ON COLUMN mae.tel IS 'Telefone único da mãe';
+COMMENT ON COLUMN mae.Endereco IS 'Endereço completo de onde mora a mãe';
+COMMENT ON COLUMN mae.seqDNA IS 'Sequência de DNA da pessoa, convertida para número binário';
+
+
+
+
+CREATE TABLE pai (
+                CPF_pai CHAR(11) NOT NULL,
+                nome VARCHAR(50) NOT NULL,
+                dtNasc DATE NOT NULL,
+                tel CHAR(11) NOT NULL,
+                Endereco VARCHAR(180) NOT NULL,
+                seqDNA VARCHAR(200) NOT NULL,
+                CONSTRAINT cpf_pai PRIMARY KEY (CPF_pai)
+);
+COMMENT ON TABLE pai IS 'Tabela com dados do pai';
+COMMENT ON COLUMN pai.CPF_pai IS 'CPF do pai';
+COMMENT ON COLUMN pai.dtNasc IS 'Data de nasacimento do pai';
+COMMENT ON COLUMN pai.tel IS 'Telefone único do pai';
+COMMENT ON COLUMN pai.Endereco IS 'Endereço completo de onde mora o pai';
+COMMENT ON COLUMN pai.seqDNA IS 'Sequência de DNA da pessoa, convertida para número binário';
+
+
+
+
+CREATE TABLE filho (
+                CPF_filho CHAR(11) NOT NULL,
+                CPF_pai CHAR(11) NOT NULL,
+                CPF_mae CHAR(11) NOT NULL,
+                nome VARCHAR(50) NOT NULL,
+                dtNasc DATE NOT NULL,
+                sexo CHAR(1),
+                tel CHAR(11) NOT NULL,
+                Endereco VARCHAR(180) NOT NULL,
+                seqDNA VARCHAR(200) NOT NULL,
+                CONSTRAINT cpf_filho PRIMARY KEY (CPF_filho)
+
+
+);
+COMMENT ON TABLE filho IS 'Tabela com dados do filho';
+COMMENT ON COLUMN filho.CPF_filho IS 'CPF do filho';
+COMMENT ON COLUMN filho.CPF_pai IS 'CPF do pai';
+COMMENT ON COLUMN filho.CPF_mae IS 'CPF da mãe';
+COMMENT ON COLUMN filho.dtNasc IS 'Data de nasacimento da mãe';
+COMMENT ON COLUMN filho.sexo IS 'Sexo do filho';
+COMMENT ON COLUMN filho.tel IS 'Telefone único do filho';
+COMMENT ON COLUMN filho.Endereco IS 'Endereço completo de onde mora o filho';
+COMMENT ON COLUMN filho.seqDNA IS 'Sequência de DNA da pessoa, convertida para número binário';
+
+
+ALTER TABLE filho ADD CONSTRAINT mae_filho_fk
+FOREIGN KEY (CPF_mae)
+REFERENCES mae (CPF_mae)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE filho ADD CONSTRAINT pai_filho_fk
+FOREIGN KEY (CPF_pai)
+REFERENCES pai (CPF_pai)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+INSERT INTO mae VALUES ('11111111111','Vanessa','1996-08-11',27999999999,'Rua Azul e Branco, 4, Centro, Cidade Teste','111110110001000111011001110111');
+
+INSERT INTO pai VALUES ('22222222222','Abrantes','1998-08-12','27988888888','Rua Vasco da Gama, 1898, São Januário, Libertadores','110011100111101110110010011101111');
+
+INSERT INTO filho VALUES ('33333333333','22222222222','11111111111','Cristiano','1998-08-12','M','27988888888','Rua Vasco da Gama, 1898, São Januário, Libertadores','11111011011111000011011001110111');
